@@ -1,52 +1,96 @@
-import Image from "next/image";
-import { products } from "./data/products";
+"use client";
 
-// The shop. A Server Component: it just maps over inventory data and renders
-// it. No state, no interactivity, exactly what Server Components are good at.
-export default function Home() {
-  return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-12">
-      <section className="mb-12 text-center">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-          Gear that sparks joy
+import { useEffect, useState } from "react";
+
+export default function PremiumPage() {
+  const [form, setForm] = useState({
+    name: "",
+    card: "",
+    expiry: "",
+    cvc: "",
+    email: "",
+  });
+
+  const [paid, setPaid] = useState(false);
+
+  // check storage on load
+  useEffect(() => {
+    const saved = localStorage.getItem("premium");
+    if (saved === "true") {
+      setPaid(true);
+    }
+  }, []);
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    localStorage.setItem("premium", "true");
+    setPaid(true);
+  }
+
+  if (paid) {
+    return (
+      <div className="p-10 text-center">
+        <h1 className="text-2xl font-bold text-green-600">
+          ✅ Payment complete, ads removed!
         </h1>
-        <p className="mx-auto mt-4 max-w-xl text-lg text-zinc-600 dark:text-zinc-400">
-          The best tech gadgets on the internet. Also, the most ads. 
-        </p>
-      </section>
+      </div>
+    );
+  }
 
-      <section className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {products.map((product) => (
-          <article
-            key={product.id}
-            className="flex flex-col overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-white/10 dark:bg-zinc-900"
-          >
-            <div className="relative aspect-square w-full bg-zinc-100 dark:bg-zinc-800">
-              <Image
-                src={product.image}
-                alt={product.name}
-                fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                className="object-cover"
-              />
-            </div>
-            <div className="flex flex-1 flex-col p-4">
-              <h2 className="font-semibold">{product.name}</h2>
-              <p className="mt-1 flex-1 text-sm text-zinc-600 dark:text-zinc-400">
-                {product.blurb}
-              </p>
-              <div className="mt-4 flex items-center justify-between">
-                <span className="text-lg font-bold">
-                  ${product.price.toFixed(2)}
-                </span>
-                <button className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-black dark:hover:bg-zinc-200">
-                  Add to cart
-                </button>
-              </div>
-            </div>
-          </article>
-        ))}
-      </section>
-    </main>
+  return (
+    <div className="p-10 max-w-md mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Go Premium</h1>
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <input
+          className="border p-2"
+          name="name"
+          placeholder="Cardholder name"
+          value={form.name}
+          onChange={handleChange}
+        />
+
+        <input
+          className="border p-2"
+          name="card"
+          placeholder="Card number"
+          value={form.card}
+          onChange={handleChange}
+        />
+
+        <input
+          className="border p-2"
+          name="expiry"
+          placeholder="Expiry date"
+          value={form.expiry}
+          onChange={handleChange}
+        />
+
+        <input
+          className="border p-2"
+          name="cvc"
+          placeholder="CVC"
+          value={form.cvc}
+          onChange={handleChange}
+        />
+
+        <input
+          className="border p-2"
+          name="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={handleChange}
+        />
+
+        <button className="bg-indigo-600 text-white p-2">
+          Pay (fake)
+        </button>
+      </form>
+    </div>
   );
 }
